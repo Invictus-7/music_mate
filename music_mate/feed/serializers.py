@@ -4,7 +4,7 @@ from rest_framework.serializers import ModelSerializer
 
 from music_mate import settings
 
-from feed.models import FeedAdv
+from feed.models import FeedAdv, Match
 
 
 class FeedAdvSerializer(ModelSerializer):
@@ -12,7 +12,7 @@ class FeedAdvSerializer(ModelSerializer):
     class Meta:
         model = FeedAdv
         fields = (
-            'name', 'city', 'style', 'instruments',
+            'id', 'name', 'city', 'style', 'instruments',
             'date_created', 'number_of_members'
         )
         read_only_fields = ('user',)
@@ -34,6 +34,16 @@ class FeedAdvSerializer(ModelSerializer):
                 raise ValidationError(settings.TOO_MUCH_MEMBERS_MSG)
 
         return data
+
+
+class MatchSerializer(ModelSerializer):
+
+    class Meta:
+        model = Match
+        fields = ('matcher', 'matched')
+        read_only_fields = ('matcher', 'matched')
+
+    # ЗАПРЕТИТЬ ПОДПИСКУ НА САМОГО СЕБЯ
 
 
 

@@ -26,4 +26,19 @@ class FeedAdv(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 
 
+class Match(models.Model):
+    """Определяет пересечение (взаимность) откликов для того,
+    чтобы разрешать/запрещать доступ к личной переписке."""
+
+    matcher = models.ForeignKey(CustomUser, related_name='outgoing_matches',
+                                on_delete=models.CASCADE, verbose_name='Кто откликнулся')
+    matched = models.ForeignKey(CustomUser, related_name='incoming_matches',
+                                on_delete=models.CASCADE, verbose_name='На кого откликнулись')
+
+    class Meta:
+        unique_together = ('matcher', 'matched')
+
+
+
+
 

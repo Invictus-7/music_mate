@@ -39,3 +39,6 @@ class CustomUser(AbstractBaseUser):
             return f'{self.username} - музыкальный коллектив'
         else:
             return f'{self.username} - музыкант'
+
+
+

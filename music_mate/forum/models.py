@@ -18,7 +18,7 @@ class BaseForumModel(models.Model):
 
 class ForumSection(BaseForumModel):
     """Модель 'Раздел' на форуме."""
-    number_of_topics = models.IntegerField('Количество тем в разделе')
+    slug = models.SlugField('Короткое название раздела', max_length=50)
 
     def __str__(self):
         return f'Раздел {self.title}'
@@ -26,15 +26,15 @@ class ForumSection(BaseForumModel):
 
 class ForumSectionTopic(BaseForumModel):
     """Модель 'Тема' на форуме."""
-    number_of_messages = models.IntegerField('Количество сообщений в теме')
     forum_section = models.ForeignKey(ForumSection, related_name='topics',
                                       on_delete=models.CASCADE)
+    slug = models.SlugField('Короткое название темы внутри раздела', max_length=50)
 
     def __str__(self):
-        return f'Тема {self.title}, id_темы - {self.id}'
+        return f'Тема {self.title}'
 
 
-class TopicMessage(models.Model):
+class ForumTopicMessage(models.Model):
     text = models.TextField('Текст сообщения')
     date_created = models.DateTimeField('Дата написания', auto_now_add=True)
     user = models.ForeignKey(CustomUser, related_name='messages',

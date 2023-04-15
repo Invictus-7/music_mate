@@ -1,13 +1,17 @@
+from drf_spectacular.utils import extend_schema
+
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from feed.models import FeedAdv
-from .serializers import FeedAdvSerializer
+from feed.models import FeedAdv, Match
+from .serializers import FeedAdvSerializer, MatchSerializer
+from users.models import CustomUser
 
 
+@extend_schema(tags=['Feed'])
 class FeedAdvViewSet(ModelViewSet):
     """Вьюсет для создания и просмотра объявлений."""
     serializer_class = FeedAdvSerializer
@@ -42,3 +46,23 @@ class FeedAdvViewSet(ModelViewSet):
         if user.is_ensemble:
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@extend_schema(tags=['Feed'])
+class MatchViewSet(ModelViewSet):
+    serializer_class = MatchSerializer
+    queryset = Match.objects.all()
+
+    # проверить через метод create, как в Dialog
+
+    def perform_create(self, serializer):
+        match_from = self.request.user
+        current_adv = FeedAdv.objects.get(id=self.kwargs['pk'])
+        adv_creator = current_adv.user_id
+        match_to = CustomUser.objects.get(id=adv_creator)
+        serializer.save(matcher=match_from, matched=match_to)
+
+
+class FeedReactView(ModelViewSet):
+    serializer_class = FeedAdvSerializer
+    queryset = FeedAdv.objects.all()

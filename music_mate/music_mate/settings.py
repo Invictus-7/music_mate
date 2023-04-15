@@ -12,7 +12,7 @@ SECRET_KEY = 'django-insecure-g2o62*%1_^!0#ylz0sawz3k0g@*hbjj=mbqv))xq9g+3f4c8vj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 AUTH_USER_MODEL = 'users.CustomUser'
 
 # Application definition
@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'users',
     'feed',
     'forum',
+    'dialogs',
 ]
 
 MIDDLEWARE = [
@@ -48,7 +49,7 @@ ROOT_URLCONF = 'music_mate.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'mate-feed/build')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -108,9 +109,15 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 # для деплоя
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 # для работы локально
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'mate-feed/build/static')
+    # os.path.join(BASE_DIR, 'build')
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 # сохранение картинок и пр.
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -124,7 +131,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
 
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.AllowAny',  # вернуть IsAuthenticated
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -136,7 +143,7 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     # Устанавливаем срок жизни токена
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
     'AUTH_HEADER_TYPES': ('Bearer',)
 }
 

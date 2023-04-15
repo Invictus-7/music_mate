@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from djoser.views import UserViewSet as UserHandleSet
+from drf_spectacular.utils import extend_schema
 
-# Create your views here.
+
+@extend_schema(tags=['User'])
+class UserViewSet(UserHandleSet):
+    """Вьюсет для модели пользователя."""
+    pass
