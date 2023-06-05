@@ -11,7 +11,6 @@ class Dialog(models.Model):
     to_whom = models.ForeignKey(CustomUser, related_name='incoming_dialogs',
                                 null=True, on_delete=models.SET_NULL)
     date_started = models.DateField(auto_now_add=True)
-    number_of_messages = models.IntegerField('Количество сообщений', default=0)
 
     class Meta:
         ordering = ['date_started']

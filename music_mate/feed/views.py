@@ -63,6 +63,23 @@ class MatchViewSet(ModelViewSet):
         serializer.save(matcher=match_from, matched=match_to)
 
 
+# ----------------React Test-----------------------------------
+
 class FeedReactView(ModelViewSet):
     serializer_class = FeedAdvSerializer
     queryset = FeedAdv.objects.all()
+
+
+class ReactMatchViewSet(ModelViewSet):
+    serializer_class = MatchSerializer
+    queryset = Match.objects.all()
+
+    # проверить через метод create, как в Dialog
+
+    def perform_create(self, serializer):
+        user_1_id = 4
+        match_from = CustomUser.objects.get(pk=user_1_id)
+        current_adv = FeedAdv.objects.get(id=2)
+        adv_creator = current_adv.user_id
+        match_to = CustomUser.objects.get(id=adv_creator)
+        serializer.save(matcher=match_from, matched=match_to)

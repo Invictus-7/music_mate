@@ -3,15 +3,14 @@ from django.db.models import Q
 from drf_spectacular.utils import extend_schema
 
 from rest_framework import status
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 from rest_framework.views import exception_handler
 from rest_framework.viewsets import ModelViewSet
 
-from dialogs.models import Dialog, Message
+from dialogs.models import Dialog
 from dialogs.serializers import DialogSerializer, MessageSerializer
+from dialogs.services import MatchChecker
 from users.models import CustomUser
 
 
@@ -22,16 +21,23 @@ class DialogViewSet(ModelViewSet):
     queryset = Dialog.objects.all()
 
     def create(self, request, *args, **kwargs):
+        """Метод скопирован с оригинальном и отредактирован -
+        добавлена проверка на наличие Match перед созданием
+        диалога."""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        # также можно предусмотреть, что модератор может иметь возможность писать без Match
-        # if MatchChecker.check_match(): сдвинуть 3 строки ниже
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        # elif: если есть диалог вернуть 200
-        # else:
-        # вернуть статус 400 (то есть, match отсутствует)
+        companion_user = CustomUser.objects.get(pk=self.kwargs['pk'])
+        checker = MatchChecker()
+        if checker.check_if_dialog_exists(self.request.user, companion_user):
+            return Response({}, status=status.HTTP_200_OK)
+
+        elif checker.check_match(self.request.user, companion_user):
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+        return Response({'errors': 'Без взаимного отклика личная перписка недоступна.'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     def get_serializer_context(self):
         """Передаем текущего пользователя и
@@ -64,25 +70,16 @@ class MessageViewSet(ModelViewSet):
     serializer_class = MessageSerializer
 
     def get_dialog(self):
-        return Dialog.objects.filter(Q(started_by=self.request.user) | Q(to_whom=self.request.user)).get(
+        return Dialog.objects.filter(Q(started_by=self.request.user) |
+                                     Q(to_whom=self.request.user)).get(
             id=self.kwargs['pk'])
 
     def get_queryset(self):
         """Allows both participants
         to access the same dialog."""
-        # companion_user = CustomUser.objects.get(id=self.kwargs['pk'])
         dialog = self.get_dialog()
         return dialog.related_messages.all()
 
     def perform_create(self, serializer):
-        # companion_user = CustomUser.objects.get(id=self.kwargs['pk'])
         dialog = self.get_dialog()
         serializer.save(author=self.request.user, dialog=dialog)
-
-        # запретить писать самому себе
-
-
-
-
-
-

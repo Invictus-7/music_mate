@@ -7,7 +7,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 
-from feed.views import FeedAdvViewSet, FeedReactView
+from feed.views import FeedAdvViewSet, FeedReactView, ReactMatchViewSet
 from users.views import UserViewSet
 
 router_v1 = DefaultRouter()
@@ -27,8 +27,9 @@ urlpatterns = [
     path('api/v1/feed/', include('feed.urls')),
     path('api/v1/forum/', include('forum.urls')),
     path('api/v1/dialogs/', include('dialogs.urls')),
-    # React
+    # React Test
     path('api/bands/show', FeedReactView.as_view({'get': 'list'})),
+    path('api/feed/respond_adv/check', ReactMatchViewSet.as_view({'post': 'create'})),
     re_path(r"^.*$", TemplateView.as_view(template_name="index.html"))
 
 ]
