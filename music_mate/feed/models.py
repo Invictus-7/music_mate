@@ -8,9 +8,9 @@ from music_mate import constants
 class FeedAdv(models.Model):
     """Модель объявления для ленты."""
     name = models.CharField('Имя/Название', max_length=200)
-    city = models.CharField('Город')
-    style = models.CharField('Стили музыки')
-    instruments = models.CharField('Инструменты')
+    city = models.CharField('Город', max_length=100)
+    style = models.CharField('Стили музыки', max_length=100)
+    instruments = models.CharField('Инструменты', max_length=255)
 
     date_created = models.DateTimeField(auto_now_add=True)
     number_of_members = models.IntegerField()
