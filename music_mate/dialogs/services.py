@@ -10,12 +10,13 @@ class MatchChecker:
         """Вызвать эту функцию внутри метода create,
         чтобы при отсутствии Match процесс создания
         объекта не запускался."""
+        print('Message 1')
         return Match.objects.filter(Q(matcher=req_user, matched=companion_user) and
                                     Q(matcher=companion_user, matched=req_user)).exists()
 
     def check_if_dialog_exists(self, req_user, companion_user):
         """Проверяет существование диалога."""
-        print('Message 1')
+        print('Message 2')
         return Dialog.objects.filter(Q(started_by=req_user, to_whom=companion_user) or
                                      Q(to_whom=companion_user, started_by=req_user)).exists()
 

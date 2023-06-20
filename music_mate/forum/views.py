@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
 from forum.models import ForumSection, ForumSectionTopic, ForumTopicMessage
-from forum.permissions import IsModerator, IsSuperUser
+from forum.permissions import IsModerator
 from forum.serializers import (
                              ForumSectionSerializer,
                              ForumSectionTopicsSerializer,
@@ -22,7 +22,7 @@ class ForumIndexViewSet(ModelViewSet):
         if self.action == 'create':
             return [IsAuthenticated(), IsModerator()]
         elif self.action == 'destroy':
-            return [IsAuthenticated(), IsSuperUser()]
+            return [IsAuthenticated(), IsModerator()]
         else:
             return []
 
@@ -76,6 +76,8 @@ class ForumTopicMessageView(ModelViewSet):
                         forum_topic_id=related_topic.id)
 
     def get_permissions(self):
+        if self.action == 'create':
+            return [IsAuthenticated()]
         if self.action == 'destroy' or self.action == 'update':
             return [IsAuthenticated(), IsModerator()]
         return []

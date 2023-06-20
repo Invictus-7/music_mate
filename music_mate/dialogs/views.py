@@ -21,7 +21,7 @@ class DialogViewSet(ModelViewSet):
     queryset = Dialog.objects.all()
 
     def create(self, request, *args, **kwargs):
-        """Метод скопирован с оригинальном и отредактирован -
+        """Метод скопирован с оригинального и отредактирован -
         добавлена проверка на наличие Match перед созданием
         диалога."""
         serializer = self.get_serializer(data=request.data)
