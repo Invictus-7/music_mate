@@ -4,8 +4,6 @@ from drf_spectacular.utils import extend_schema
 
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.serializers import ValidationError
-from rest_framework.views import exception_handler
 from rest_framework.viewsets import ModelViewSet
 
 from dialogs.models import Dialog
@@ -53,15 +51,8 @@ class DialogViewSet(ModelViewSet):
         еще нет - его нужно создать, иначе - вернуть уже существующий."""
         current_user = self.request.user
         companion_user = CustomUser.objects.get(id=self.kwargs['pk'])
-        # messages_count = Dialog
+        # messages_count = ...
         serializer.save(started_by=current_user, to_whom=companion_user)
-
-    def handle_exception(self, exc):
-        """Обработка вызванной в сериализаторе ошибки - при
-        попытке создать диалог в отсутствие match."""
-        if isinstance(exc, ValidationError):
-            return Response(exc.detail, status=status.HTTP_400_BAD_REQUEST)
-        return exception_handler(exc, self)
 
 
 @extend_schema(tags=['Dialogs'])

@@ -42,7 +42,6 @@ class FeedAdvViewSet(ModelViewSet):
         музыкант, и всех музыкантов, если залогинилась группа."""
         user = request.user
         to_display = FeedAdv.objects.all().exclude(user__is_ensemble=user.is_ensemble)
-        print(to_display)
         serializer = FeedAdvSerializer(to_display, many=True)
         if user.is_ensemble:
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -64,7 +63,7 @@ class MatchViewSet(ModelViewSet):
         serializer.save(matcher=match_from, matched=match_to)
 
 
-# ----------------React Test-----------------------------------
+# ----------------React Test--------------------
 
 class FeedReactView(ModelViewSet):
     serializer_class = FeedAdvSerializer

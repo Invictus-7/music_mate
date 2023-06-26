@@ -12,8 +12,6 @@ class CustomUser(AbstractBaseUser):
     is_staff = models.BooleanField('Модератор', default=False)  # staff - модератор форума
     is_superuser = models.BooleanField('Администратор', default=False)
     is_ensemble = models.BooleanField('Ансамбль', default=False)
-    instrument = models.ManyToManyField('Instrument', through='UserInstrument',
-                                        verbose_name='Инструмент', related_name='instruments')
     # насчет рейтинга - см. п. 1 файла Notices.txt
     # personal_rating = models.ManyToManyField(...)
 
@@ -43,19 +41,8 @@ class CustomUser(AbstractBaseUser):
             return f'{self.username} - музыкант'
 
 
-class Instrument(models.Model):
-    """Модель инструмента."""
-    name = models.CharField('Инструмент', max_length=255)
-
-    def __str__(self):
-        return self.name
 
 
-class UserInstrument(models.Model):
-    """Промежуточная модель - музыкант-инструмент для связи M2M."""
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='музыкант',
-                             related_name='user')
-    instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE, verbose_name='инструмент',
-                                   related_name='instrument')
+
 
 
